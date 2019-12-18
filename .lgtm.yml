@@ -1,9 +1,10 @@
+path_classifiers:
+
+queries:
+  - include: "*"
+        
 extraction:
   cpp:
-     prepare:
-        packages: 
-          - libboost-all-dev
-          - bison
      index:
         build_command:
         - cp cfe/cmake/Makefile.sample Makefile
