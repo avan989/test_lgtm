@@ -210,15 +210,11 @@ int32 OS_SocketBind_Impl(uint32 sock_id, const OS_SockAddr_t *Addr)
       break;
 #endif
    default:
-      addrlen = 0;
+      return OS_ERR_BAD_ADDRESS;
       break;
    }
 
-   
-   if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN) // lgtm [cpp/constant-comparison] 
-   {
-      return OS_ERR_BAD_ADDRESS;
-   }
+   CompileTimeAssert(addrlen <= OS_SOCKADDR_MAX_LEN,  AddrLenExceedSockaddrLen);
 
    os_result = bind(OS_impl_filehandle_table[sock_id].fd, sa, addrlen);
    if (os_result < 0)
@@ -542,7 +538,7 @@ int32 OS_SocketGetInfo_Impl (uint32 sock_id, OS_socket_prop_t *sock_prop)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 {
-   sa_family_t sa_family;
+   sa_family_t sa_family = 0;
    socklen_t addrlen;
    OS_SockAddr_Accessor_t *Accessor;
 
@@ -562,17 +558,14 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
       break;
 #endif
    default:
-      addrlen = 0;
+      return OS_ERR_NOT_IMPLEMENTED;
       break;
    }
 
-   if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN) // lgtm [cpp/constant-comparison] 
-   {
-      return OS_ERR_NOT_IMPLEMENTED;
-   }
+   CompileTimeAssert(addrlen <= OS_SOCKADDR_MAX_LEN,  AddrLenExceedSockaddrLen);
 
    Addr->ActualLength = addrlen;
-   Accessor->sockaddr.sa_family = sa_family; // lgtm[cpp/uninitialized-local] 
+   Accessor->sockaddr.sa_family = sa_family;
 
    return OS_SUCCESS;
 } /* end OS_SocketAddrInit_Impl */
