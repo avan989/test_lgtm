@@ -160,6 +160,22 @@ int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char* Cmd)
    {
        shell = "/bin/sh";
    }
+   else if ( strstr(shell, "sh") )
+   {
+       shell = "/bin/sh";
+   }
+   else if (strstr(shell, "bash"))
+   {
+       shell = "/bin/bash";  
+   }
+   else if ( strstr(shell, "ksh") )
+   {
+       shell = "/bin/ksh";
+   }
+   else
+   {
+       return OS_ERROR;
+   }
 
    cpid = fork();
    if (cpid < 0)
