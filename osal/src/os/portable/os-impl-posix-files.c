@@ -181,7 +181,6 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
     mode_t readbits;
     mode_t writebits;
     struct stat st;
-    int32 fd;
 
     /*
      * In order to preserve any OTHER mode bits,
@@ -192,15 +191,8 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
      * which is generally not part of the OSAL API, but
      * is important for the underlying OS.
      */
-    fd = open(local_path, O_RDONLY);
-    if (fd < 0)
+    if ( stat(local_path, &st) < 0 )
     {
-        return OS_FS_ERROR;
-    }
-
-    if ( fstat(fd, &st) < 0 )
-    {
-       close(fd);
        return OS_FS_ERROR;
     }
 
@@ -245,13 +237,11 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
     }
 
     /* finally, write the modified mode back to the file */
-    if ( fchmod(fd, st.st_mode) < 0 )
+    if ( chmod(local_path, st.st_mode) < 0 )
     {
-        close(fd);
         return OS_FS_ERROR;
     }
 
-    close(fd);
     return OS_SUCCESS;
 
 } /* end OS_FileChmod_Impl */

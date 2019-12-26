@@ -484,11 +484,11 @@ static int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_r
 {
    uint32 max_id;
    uint32 base_id;
-   uint32 local_id;
+   uint32 local_id = 0;
    uint32 idvalue;
    uint32 i;
    int32 return_code;
-   OS_common_record_t *obj;
+   OS_common_record_t *obj = NULL;
 
    base_id = OS_GetBaseForObjectType(idtype);
    max_id = OS_GetMaxForObjectType(idtype);
@@ -526,7 +526,7 @@ static int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_r
 
    if(return_code == OS_SUCCESS)
    {
-       return_code = OS_ObjectIdMap(idtype, idvalue, &obj->active_id); // lgtm[cpp/uninitialized-local]
+       return_code = OS_ObjectIdMap(idtype, idvalue, &obj->active_id);
 
        /* Ensure any data in the record has been cleared */
        obj->name_entry = NULL;
@@ -542,11 +542,11 @@ static int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_r
 
    if (array_index != NULL)
    {
-       *array_index = local_id; // lgtm[cpp/uninitialized-local] 
+       *array_index = local_id;
    }
    if (record != NULL)
    {
-       *record = obj; // lgtm[cpp/uninitialized-local] 
+       *record = obj;
    }
 
    return return_code;
