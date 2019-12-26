@@ -210,11 +210,14 @@ int32 OS_SocketBind_Impl(uint32 sock_id, const OS_SockAddr_t *Addr)
       break;
 #endif
    default:
-      return OS_ERR_BAD_ADDRESS;
+      addrlen = 0;
       break;
    }
 
-   CompileTimeAssert(addrlen <= OS_SOCKADDR_MAX_LEN,  AddrLenExceedSockaddrLen);
+   if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+   {
+      return OS_ERR_BAD_ADDRESS;
+   }
 
    os_result = bind(OS_impl_filehandle_table[sock_id].fd, sa, addrlen);
    if (os_result < 0)
@@ -538,7 +541,7 @@ int32 OS_SocketGetInfo_Impl (uint32 sock_id, OS_socket_prop_t *sock_prop)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 {
-   sa_family_t sa_family = 0;
+   sa_family_t sa_family;
    socklen_t addrlen;
    OS_SockAddr_Accessor_t *Accessor;
 
@@ -558,11 +561,14 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
       break;
 #endif
    default:
-      return OS_ERR_NOT_IMPLEMENTED;
+      addrlen = 0;
       break;
    }
 
-   CompileTimeAssert(addrlen <= OS_SOCKADDR_MAX_LEN,  AddrLenExceedSockaddrLen);
+   if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+   {
+      return OS_ERR_NOT_IMPLEMENTED;
+   }
 
    Addr->ActualLength = addrlen;
    Accessor->sockaddr.sa_family = sa_family;
